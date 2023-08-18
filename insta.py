@@ -1,33 +1,42 @@
-# Import the library
-from typing import OrderedDict
-import instaloader
+from instagrapi import Client
+import argparse
+
+parser = argparse.ArgumentParser(description="Script for interacting with Instagram")
+parser.add_argument('-user', required=True, help='Instagram User')
+parser.add_argument('-password', required=True, help='Instagram Password')
+
+args = parser.parse_args()
 
 
-instagram = instaloader.Instaloader()
+usuario = args.user
+contra = args.password
 
 
-usuario = "Neo" # Instagram User
-contra = "Wh1terabb1t" # Instagram Password
-instagram.login(usuario,contra) #login
+cl = Client()
+cl.login(usuario, contra)
 
-# Obtain the profile
-profile = instaloader.Profile.from_username(instagram.context,usuario)
-
-#list of Followers and followees
 seguidores_lista = [] 
 seguidos_lista = []
 
-#get the followers
-for seguidores in profile.get_followers():
-    seguidores_lista.append(seguidores.username)
 
-#get the followees 
-for seguidos in profile.get_followees():
-    seguidos_lista.append(seguidos.username)
+seguidos = cl.user_following(cl.user_id)
+seguidores = cl.user_followers(cl.user_id)
 
-#compare the followers with the followees
+for user_id, user_info in seguidores.items():
+    username = user_info.username
+    seguidores_lista.append(username)
+
+
+
+for user_id, user_info in seguidos.items():
+    username = user_info.username
+    seguidos_lista.append(username)
+
 archivo = open("seguidores.txt","w")
 for bucle in seguidos_lista:
     if bucle not in seguidores_lista:
         archivo.write(bucle + 1 * ' ' + "nope" + "\n")
 
+
+
+print("Done!")
